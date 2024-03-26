@@ -5,25 +5,27 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using WebAssignment3.Data;
 
-namespace WebAssignment3.Data
+namespace WebAssignment3.Controllers
 {
-    public class UsersController : Controller
+    public class OrdersController : Controller
     {
         private readonly WebAss3Context _context;
 
-        public UsersController(WebAss3Context context)
+        public OrdersController(WebAss3Context context)
         {
             _context = context;
         }
 
-        // GET: Users
+        // GET: Orders
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Users.ToListAsync());
+            var webAss3Context = _context.Orders.Include(o => o.User);
+            return View(await webAss3Context.ToListAsync());
         }
 
-        // GET: Users/Details/5
+        // GET: Orders/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -31,39 +33,42 @@ namespace WebAssignment3.Data
                 return NotFound();
             }
 
-            var user = await _context.Users
+            var order = await _context.Orders
+                .Include(o => o.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
+            if (order == null)
             {
                 return NotFound();
             }
 
-            return View(user);
+            return View(order);
         }
 
-        // GET: Users/Create
+        // GET: Orders/Create
         public IActionResult Create()
         {
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
-        // POST: Users/Create
+        // POST: Orders/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Email,Password,Username,PurchaseHistory,ShippingAddress")] User user)
+        public async Task<IActionResult> Create([Bind("Id,UserId,TotalAmount,OrderDate")] Order order)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(user);
+                _context.Add(order);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", order.UserId);
+            return View(order);
         }
 
-        // GET: Users/Edit/5
+        // GET: Orders/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -71,22 +76,23 @@ namespace WebAssignment3.Data
                 return NotFound();
             }
 
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null)
             {
                 return NotFound();
             }
-            return View(user);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", order.UserId);
+            return View(order);
         }
 
-        // POST: Users/Edit/5
+        // POST: Orders/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Email,Password,Username,PurchaseHistory,ShippingAddress")] User user)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,TotalAmount,OrderDate")] Order order)
         {
-            if (id != user.Id)
+            if (id != order.Id)
             {
                 return NotFound();
             }
@@ -95,12 +101,12 @@ namespace WebAssignment3.Data
             {
                 try
                 {
-                    _context.Update(user);
+                    _context.Update(order);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UserExists(user.Id))
+                    if (!OrderExists(order.Id))
                     {
                         return NotFound();
                     }
@@ -111,10 +117,11 @@ namespace WebAssignment3.Data
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", order.UserId);
+            return View(order);
         }
 
-        // GET: Users/Delete/5
+        // GET: Orders/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -122,34 +129,35 @@ namespace WebAssignment3.Data
                 return NotFound();
             }
 
-            var user = await _context.Users
+            var order = await _context.Orders
+                .Include(o => o.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
+            if (order == null)
             {
                 return NotFound();
             }
 
-            return View(user);
+            return View(order);
         }
 
-        // POST: Users/Delete/5
+        // POST: Orders/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user != null)
+            var order = await _context.Orders.FindAsync(id);
+            if (order != null)
             {
-                _context.Users.Remove(user);
+                _context.Orders.Remove(order);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool UserExists(int id)
+        private bool OrderExists(int id)
         {
-            return _context.Users.Any(e => e.Id == id);
+            return _context.Orders.Any(e => e.Id == id);
         }
     }
 }

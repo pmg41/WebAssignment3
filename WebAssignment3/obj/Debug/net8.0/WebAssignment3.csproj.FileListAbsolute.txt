@@ -250,3 +250,4 @@ C:\Conestoga\web sem2\WebAssignment3\WebAssignment3\bin\Debug\net8.0\runtimes\wi
 C:\Conestoga\web sem2\WebAssignment3\WebAssignment3\bin\Debug\net8.0\runtimes\win\lib\net7.0\System.Drawing.Common.dll
 C:\Conestoga\web sem2\WebAssignment3\WebAssignment3\bin\Debug\net8.0\runtimes\win\lib\net7.0\System.Security.Cryptography.ProtectedData.dll
 C:\Conestoga\web sem2\WebAssignment3\WebAssignment3\bin\Debug\net8.0\runtimes\win\lib\net7.0\System.Windows.Extensions.dll
+C:\Conestoga\web sem2\WebAssignment3\WebAssignment3\obj\Debug\net8.0\WebAssignment3.sourcelink.json
